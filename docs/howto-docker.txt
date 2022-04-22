@@ -1,0 +1,88 @@
+==============================setup============================
+==========================================================
+# install docker on windows
+step-1: download: https://docs.docker.com/desktop/windows/install/
+step-2: install docker desktop setup
+
+# install wsl (Windows Subsystem for Linux) on backend
+step-1: brows guide, https://docs.microsoft.com/en-us/windows/wsl/install-manual
+step-2: dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
+step-3: dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
+step-4: download WSL2 Linux kernel update package for x64 machines, https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi
+step-5: wsl --set-default-version 2
+step-6: download wsl (debian, ubuntu, ...), https://aka.ms/wslstore
+
+# install docker machine:
+step-1: curl -L https://github.com/docker/machine/releases/download/v0.16.2/docker-machine-Windows-x86_64.exe > "C:\temp-directory"
+step-2: copy from temp-directory to C:\Program Files\Docker\Docker\resources\bin
+step-3: docker-machine --version
+step-4: docker-machine create --driver=virtualbox test
+==========================================================
+==========================================================
+# install docker on linux
+step-1: brows guide, https://docs.docker.com/engine/install/
+
+# install docker machine:
+step-1: curl -L https://github.com/docker/machine/releases/download/v0.16.2/docker-machine-`uname -s`-`uname -m` >/tmp/docker-machine &&
+    chmod +x /tmp/docker-machine &&
+    sudo cp /tmp/docker-machine /usr/local/bin/docker-machine
+step-2: docker-machine --version
+step-3: docker-machine create --driver=virtualbox test
+==========================================================
+==========================================================
+# install docker on mac
+step-1: download https://docs.docker.com/desktop/mac/install/
+step-2: install setup
+
+# install docker machine:
+step-1: curl -L https://github.com/docker/machine/releases/download/v0.16.2/docker-machine-`uname -s`-`uname -m` >/usr/local/bin/docker-machine && \
+  chmod +x /usr/local/bin/docker-machine
+step-2: Go to System Preferences > Security & Privacy Then hit the "Allow" button to let Oracle (VirtualBox) load.
+step-3: sudo "/Library/Application Support/VirtualBox/LaunchDaemons/VirtualBoxStartup.sh" restart
+step-4: docker-machine --version
+step-5: docker-machine create --driver=virtualbox test
+==============================command============================
+==========================================================
+docker --version
+docker -v
+docker ps [--all]
+docker image ls
+docker container ls [-la]
+docker pull image-name
+docker create image-name
+docker start [-a] image-id
+docker stop image-id
+docker kill image-id
+docker logs image-id
+docker run [-p 8080:8080] [-it] image-name command
+run = create + start
+
+# delete:
+docker image rm image-name/tag
+docker system prune [-a]
+docker volume prune
+delete from file system
+    1. mac: rm  Library/Containers/com.docker.docker/Data/vms/0/data/*
+    2. restart docker
+
+# connect to container
+docker exec -it container-id command
+docker exec -it container-id sh
+
+# create image from Dockerfile
+docker build -t image-name(docker-id/project-name:version) .
+
+# create image manually
+step-1: docker run -it alpine sh
+step-2: customize image
+step-3: docker commit -c 'CMD [""]' image-id
+
+# docker compose
+docker-compose up [--build] [-d]
+
+
+
+
+
+
+
