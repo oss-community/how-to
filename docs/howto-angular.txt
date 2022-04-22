@@ -3,21 +3,22 @@ step-2: node --version
 step-3: npm install -g npm
 step-4: npm install -g @angular/cli
 step-5: ng --version
-
-
 ======================================================================================================
 ======================================================================================================
 ======================================================================================================
-
+# create single project
 create project: ng new a-name --routing --style=scss --prefix a-name
 
+# create monorepo pattern
 create workspace: ng new a-name --create-application false
 create workspace project: ng generate application a-name --routing --style=scss --prefix a-name
 create workspace lib: ng generate library lib-name
+
+# create component and service
 create component: ng generate component component-name
 create service: ng generate service service-name
-#####################
-add bootstrap
+
+# add bootstrap
 step-1: npm install jquery --save
 step-2: npm install popper.js --save
 step-3: npm install bootstrap --save
@@ -34,8 +35,7 @@ step-5: add following code to angular.js
 ],
 step-6: add @import "~bootstrap/dist/css/bootstrap.css"; to styles.(s)css
 
-#####################
-add fontawesome to angular 11
+# add fontawesome to angular 11
 step-1: npm install @fortawesome/fontawesome-svg-core
 step-2: npm install @fortawesome/free-solid-svg-icons
 step-3: npm install @fortawesome/free-brands-svg-icons
@@ -43,8 +43,7 @@ step-4: npm install @fortawesome/free-regular-svg-icons
 step-5: npm install @fortawesome/angular-fontawesome@0.8
 step-6: import FontAwesomeModule in app.module.ts
 
-#####################
-add fontawesome free
+# add fontawesome free
 step-1: npm install @fortawesome/fontawesome-free
 
 "styles": [
@@ -61,8 +60,7 @@ step-1: npm install @fortawesome/fontawesome-free
 @import "~@fortawesome/fontawesome-free/css/fontawesome.min.css";
 @import "~@fortawesome/fontawesome-free/css/v4-shims.min.css";
 
-#####################
-add angular material
+# add angular material
 step-1: npm uninstall @schematics/angular
 step-2: npm install @schematics/angular@9.1.0
 step-3: ng add @angular/material
@@ -72,8 +70,6 @@ MatIconModule,
 MatCardModule,
 MatButtonModule,
 MatProgressSpinnerModule,
-
-
 ======================================================================================================
 ======================================================================================================
 ======================================================================================================
@@ -121,8 +117,7 @@ step-7: replace following code to whole content of index.html
       }
 
   </script>
-  <link as="script" crossorigin="anonymous"
-        href="https://cdnjs.cloudflare.com/ajax/libs/single-spa/4.3.5/system/single-spa.min.js" rel="preload"/>
+  <link as="script" crossorigin="anonymous" href="https://cdnjs.cloudflare.com/ajax/libs/single-spa/4.3.5/system/single-spa.min.js" rel="preload"/>
   <script src='https://unpkg.com/core-js-bundle@3.1.4/minified.js'></script>
   <script src="https://unpkg.com/zone.js"></script>
   <script src="https://unpkg.com/import-map-overrides@1.6.0/dist/import-map-overrides.js"></script>

@@ -2,20 +2,16 @@ extract jdepend-2.10.zip/jdepend-2.10.tar.gz
 cd jdepend-2.10 directory
 ant jar
 copy jdepend-2.10.jar to jdepend root directory
-
 ================================================================================================
 ================================================================================================
 ================================================================================================
-
 scan project with jdepend
-java -cp "path-to/jdepend-2.10.jar" jdepend.swingui.JDepend ./core/contract/target/classes
-java -cp "path-to/jdepend-2.10.jar" java jdepend.textui.JDepend ./core/contract/target/classes
-java -cp "path-to/jdepend-2.10.jar" java jdepend.xmlui.JDepend -file ./jdepend/report.xml ./core/contract/target/classes
-
+java -cp "path-to/jdepend-2.10.jar" jdepend.swingui.JDepend ./project-path/target/classes
+java -cp "path-to/jdepend-2.10.jar" java jdepend.textui.JDepend ./project-path/target/classes
+java -cp "path-to/jdepend-2.10.jar" java jdepend.xmlui.JDepend -file ./jdepend/report.xml ./project-path/target/classes
 ================================================================================================
 ================================================================================================
 ================================================================================================
-
 integrate to maven:
 step-1: add following plugin
 <plugin>

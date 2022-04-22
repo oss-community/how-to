@@ -1,0 +1,11 @@
+# your machine
+step-1: git checkout --orphan site
+step-2: git clean -fdx
+step-3: echo "site" > index.html
+step-4: git add . && git commit -m "initial site content" && git push origin site
+
+# GitHub
+step-1: go to GitHub repository > setting > pages
+step-2: in the source section
+            1. set branch site
+            2. set folder /root

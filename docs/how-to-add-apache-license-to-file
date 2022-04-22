@@ -1,4 +1,4 @@
-#copyright of files, it should be add to head of the files.
+# copyright of files, it should be add to head of the files.
 /* **********************************************************************
  * Copyright (c) 2022 Saman Alishirishahrbabak.
  * All Rights Reserved.
@@ -15,25 +15,3 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  * ***********************************************************************/
-
-#javadoc for classes.
-/**
- * The {@link class-name} class ...
- * <ul>
- *  <li>{@link #method-name}</li>
- * </ul>
- *
- * @author Saman Alishirishahrbabak
- * @version 1.0.0
- * @since 2022-01-01
- */
-
-#javadoc for unit tests.
-/**
- * {@link test-class-name} class provides unit tests for {@link class-name}.
- *
- * @author Saman Alishirishahrbabak
- * @version 1.0.0
- * @see class-name
- * @since 2022-01-01
- */
