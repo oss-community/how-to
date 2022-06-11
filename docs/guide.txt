@@ -1,0 +1,394 @@
+sudo apt install net-tools
+
+############### JAVA ###############
+download from https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html
+
+sudo tar xzvf ~/Downloads/jdk-17.0.3.1_linux-x64_bin.tar.gz -C /opt/
+sudo mv /opt/jdk-17.0.3.1/ /opt/java-17
+
+sudo chown ${USER} -R /opt/
+sudo chmod 765 -R /opt/
+sudo chmod +x -R /opt/java-17/bin/
+
+echo "export JAVA_HOME=/opt/java-17" >> ${HOME}/.bashrc
+
+if PATH is exit in .bashrc
+	sed -i 's/PATH=/PATH=$JAVA_HOME\/bin:/' .bashrc
+else
+	echo "export PATH=\$JAVA_HOME/bin:$PATH" >> ${HOME}/.bashrc
+
+source ~/.bashrc
+java -version
+############### MAVEN ###############
+download maven from https://maven.apache.org/download.cgi
+
+sudo tar xzvf ~/Downloads/apache-maven-3.8.5-bin.tar.gz -C /opt/
+sudo mv /opt/apache-maven-3.8.5/ /opt/maven
+
+sudo chown ${USER} -R /opt/
+sudo chmod 765 -R /opt/
+sudo chmod +x -R /opt/maven/bin/
+
+
+echo "export M2_HOME=/opt/maven" >> ${HOME}/.bashrc
+
+if PATH is exit in .bashrc
+	sed -i 's/PATH=/PATH=$M2_HOME\/bin:/' .bashrc
+else
+	echo "export PATH=\$M2_HOME/bin:$PATH" >> ${HOME}/.bashrc
+
+source ~/.bashrc
+mvn -version
+############### GIT ###############
+sudo apt-get install git
+git --version
+############### DOCKER ###############
+sudo apt-get remove docker docker-engine docker.io containerd runc
+sudo apt-get update
+sudo apt-get install ca-certificates curl gnupg lsb-release
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
+  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+sudo apt-get update
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin
+
+sudo systemctl status docker
+sudo usermod -aG docker ${USER}
+docker --version
+docker compose version
+
+echo "export DOCKER_CONFIG=\$HOME/.docker" >> ${HOME}/.bashrc
+
+############### KUBERNETES ###############
+sudo apt install net-tools
+run: hostname
+run: ifconfig
+sudo gedit /etc/hosts ===>>>  ip	hostname
+
+sudo cat /sys/class/dmi/id/product_uuid
+lsmod | grep br_netfilter
+
+cat <<EOF | sudo tee /etc/modules-load.d/k8s.conf
+br_netfilter
+EOF
+
+cat <<EOF | sudo tee /etc/sysctl.d/k8s.conf
+net.bridge.bridge-nf-call-ip6tables = 1
+net.bridge.bridge-nf-call-iptables = 1
+EOF
+
+sudo sysctl --system
+nc 127.0.0.1 6443
+
+sudo swapoff -a
+sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
+
+sudo gedit /etc/sysctl.conf    ===>>>  net.ipv4.ip_forward=1
+sudo sysctl -p
+
+sudo apt-get update
+
+sudo apt-get install -y apt-transport-https ca-certificates curl
+
+sudo curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
+
+echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+
+sudo apt-get update
+
+sudo apt-get install -y kubelet kubeadm kubectl
+
+sudo apt-mark hold kubelet kubeadm kubectl
+
+kubeadm version
+kubectl version
+kubelet --version
+
+sudo gedit /usr/lib/systemd/system/docker.service ===>>> ExecStart=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock --exec-opt native.cgroupdriver=systemd
+
+#cat <<EOF | sudo tee /etc/docker/daemon.json
+#{
+#  "exec-opts": ["native.cgroupdriver=systemd"],
+#  "log-driver": "json-file",
+#  "log-opts": {
+#    "max-size": "100m"
+#  },
+#  "storage-driver": "overlay2",
+# "storage-opts": [
+#   "overlay2.override_kernel_check=true"
+#  ]
+#}
+#EOF
+#mkdir -p /etc/systemd/system/docker.service.d
+#sudo systemctl daemon-reload
+#sudo systemctl restart docker
+#sudo systemctl enable docker
+
+kubectl apply -f https://projectcalico.docs.tigera.io/manifests/calico.yaml
+kubectl apply -f https://docs.projectcalico.org/v3.14/manifests/calico.yaml
+
+
+sudo systemctl status docker
+sudo systemctl status kubelet
+
+sudo reboot
+
+
+kubectl get services --all-namespaces -o wide
+kubectl get pods --all-namespaces -o wide
+kubectl get nods --all-namespaces -o wide
+kubectl get deploymens --all-namespaces -o wide
+
+kubectl logs -n name-space pod
+kubectl rollout restart deployment -n name-space deployment-name 
+#kubectl rollout restart deployment -n capd-system deployment-name 
+
+
+capd-controller-manager-86b587cf4b-n2r4h
+############### KIND ###############
+curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.12.0/kind-linux-amd64
+chmod +x ./kind
+sudo mv ./kind /usr/local/bin/kind
+kind --version
+
+sudo sysctl fs.inotify.max_user_watches=524288
+sudo sysctl fs.inotify.max_user_instances=512
+
+echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
+echo fs.inotify.max_user_instances = 512 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
+
+#sudo gedit /etc/sysctl.conf 
+#fs.inotify.max_user_watches=524288
+#fs.inotify.max_user_instances=512
+#sudo sysctl -p
+
+
+kind create cluster
+kubectl cluster-info --context kind-kind
+kind delete clusters kind
+
+
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.5.1/aio/deploy/recommended.yaml
+
+#kubectl create clusterrolebinding default-admin --clusterrole cluster-admin --serviceaccount=default:default
+
+create file named: service-account.yaml
+content:
+
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: admin-user
+  namespace: kubernetes-dashboard
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: admin-user
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: admin-user
+  namespace: kubernetes-dashboard
+
+
+kubectl apply -f service-account.yaml
+
+kubectl describe serviceaccount admin-user -n kubernetes-dashboard
+kubectl describe secret admin-user-token-???? -n kubernetes-dashboard
+
+
+kubectl -n kubernetes-dashboard get secret $(kubectl -n kubernetes-dashboard get sa/admin-user -o jsonpath="{.secrets[0].name}") -o go-template="{{.data.token | base64decode}}"
+
+kubectl proxy
+
+http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/.
+
+############### TANZU ###############
+https://tanzucommunityedition.io/docs/v0.11/cli-installation/
+tar -xzvf ~/Downloads/tce-linux-amd64-v0.11.0.tar.gz -C ~/Downloads/
+~/Downloads/tce-linux-amd64-v0.11.0/install.sh
+tanzu version
+
+https://hub.docker.com/r/kindest/haproxy/tags
+docker pull kindest/haproxy:v20220207-ca68f7d4
+
+docker kill $(docker ps -q)
+docker system prune -a --volumes
+
+tanzu management-cluster create -i docker --name tce-local-test -v 10 --plan dev --ceip-participation=false
+tanzu mc create -i docker --name tce-local-test -v 10 --plan dev --ceip-participation=false
+
+#kubectl proxy
+#kubectl apply -f https://raw.githubusercontent.com/antrea-io/antrea/main/build/yamls/antrea.yml
+#kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+
+tanzu management-cluster get
+
+tanzu management-cluster kubeconfig get tce-local-test --admin
+kubectl config use-context tce-local-test-admin@tce-local-test
+
+
+tanzu cluster create cluster-test --plan dev
+tanzu cluster list
+tanzu cluster kubeconfig get cluster-test --admin
+kubectl config use-context cluster-test-admin@cluster-test
+
+
+install https://github.com/vmware-tanzu/octant
+https://github.com/vmware-tanzu/octant/releases
+tar -xzvf ~/Downloads/octant_0.25.1_Linux-64bit.tar.gz -C /opt
+mv /opt/octant_0.25.1_Linux-64bit /opt/octant-home
+echo "export OCTANT_HOME=/opt/octant-home" >> ${HOME}/.bashrc
+sed -i 's/PATH=/PATH=$OCTANT_HOME:/' .bashrc
+source ~/.bashrc
+octant version
+
+run: octant
+
+############### Cloud Foundry ###############
+curl -L "https://packages.cloudfoundry.org/stable?release=linux64-binary&version=v8&source=github" | tar -zx
+
+sudo mv cf8 /usr/local/bin
+sudo mv cf /usr/local/bin
+
+
+#sudo curl -o /usr/share/bash-completion/completions/cf8 https://raw.githubusercontent.com/cloudfoundry/cli-ci/master/ci/#installers/completion/cf8
+
+cf version
+
+
+sudo apt-get install -y build-essential zlib1g-dev ruby ruby-dev openssl libxslt1-dev libxml2-dev libssl-dev libreadline-dev libyaml-dev libsqlite3-dev sqlite3
+
+download bosh cli from https://github.com/cloudfoundry/bosh-cli/releases
+
+sudo mv ~/Downloads/bosh-??? ~/Downloads/bosh
+sudo chmod +x ~/Downloads/bosh
+sudo mv ~/Downloads/bosh /usr/local/bin/bosh
+bosh -v
+
+sudo apt-get update
+
+sudo apt-get install -y build-essential zlib1g-dev ruby ruby-dev openssl \
+libxslt1-dev libxml2-dev libssl-dev libreadline-dev \
+libyaml-dev libsqlite3-dev sqlite3
+
+sudo apt-get install virtualbox
+VBoxManage --version
+sudo apt install virtualbox-ext-pack
+sudo apt install qemu-kvm libvirt-doc
+
+git clone https://github.com/cloudfoundry/bosh-deployment ~/workspace/bosh-deployment
+mkdir -p ~/deployments/vbox
+cd ~/deployments/vbox
+sudo ip route add   10.244.0.0/16 via 192.168.56.6
+sudo ip route add   192.168.56.0/24 via 192.168.56.6
+
+bosh create-env ~/workspace/bosh-deployment/bosh.yml \
+  --state ./state.json \
+  -o ~/workspace/bosh-deployment/virtualbox/cpi.yml \
+  -o ~/workspace/bosh-deployment/virtualbox/outbound-network.yml \
+  -o ~/workspace/bosh-deployment/bosh-lite.yml \
+  -o ~/workspace/bosh-deployment/bosh-lite-runc.yml \
+  -o ~/workspace/bosh-deployment/uaa.yml \
+  -o ~/workspace/bosh-deployment/credhub.yml \
+  -o ~/workspace/bosh-deployment/jumpbox-user.yml \
+  --vars-store ./creds.yml \
+  -v director_name=bosh-lite \
+  -v internal_ip=192.168.56.6 \
+  -v internal_gw=192.168.56.1 \
+  -v internal_cidr=192.168.56.0/24 \
+  -v outbound_network_name=NatNetwork
+
+bosh create-env --recreate ~/workspace/bosh-deployment/bosh.yml \
+  --state ./state.json \
+  -o ~/workspace/bosh-deployment/virtualbox/cpi.yml \
+  -o ~/workspace/bosh-deployment/virtualbox/outbound-network.yml \
+  -o ~/workspace/bosh-deployment/bosh-lite.yml \
+  -o ~/workspace/bosh-deployment/bosh-lite-runc.yml \
+  -o ~/workspace/bosh-deployment/uaa.yml \
+  -o ~/workspace/bosh-deployment/credhub.yml \
+  -o ~/workspace/bosh-deployment/jumpbox-user.yml \
+  --vars-store ./creds.yml \
+  -v director_name=bosh-lite \
+  -v internal_ip=192.168.56.6 \
+  -v internal_gw=192.168.56.1 \
+  -v internal_cidr=192.168.56.0/24 \
+  -v outbound_network_name=NatNetwork
+
+export BOSH_CLIENT=admin
+export BOSH_CLIENT_SECRET=`bosh int ./creds.yml --path /admin_password`
+bosh alias-env vbox -e 192.168.56.6 --ca-cert <(bosh int ./creds.yml --path /director_ssl/ca)
+
+
+bosh -e vbox env
+
+bosh -e vbox update-cloud-config ~/workspace/bosh-deployment/warden/cloud-config.yml
+bosh -e vbox upload-stemcell  https://bosh.io/d/stemcells/bosh-warden-boshlite-ubuntu-xenial-go_agent
+
+#bosh -e vbox upload-stemcell \
+#  https://bosh.io/d/stemcells/bosh-warden-boshlite-ubuntu-xenial-go_agent?v=315.45 \
+#  --sha1 674cd3c1e64d8c51e62770697a63c07ca04e9bbd
+
+bosh -e vbox -d zookeeper deploy <(wget -O- https://raw.githubusercontent.com/cppforlife/zookeeper-release/master/manifests/zookeeper.yml)
+bosh -e vbox -d zookeeper run-errand smoke-tests
+
+
+https://raw.githubusercontent.com/cppforlife/zookeeper-release/master/manifests/zookeeper.yml
+
+
+
+#bosh -e vbox upload-stemcell https://bosh.io/d/stemcells/bosh-warden-boshlite-ubuntu-trusty-#go_agent?v=3468.17 \
+#  --sha1 1dad6d85d6e132810439daba7ca05694cec208ab
+
+bosh -e vbox upload-stemcell https://bosh.io/d/stemcells/bosh-warden-boshlite-ubuntu-trusty-go_agent
+bosh -e vbox upload-release https://bosh.io/d/github.com/cloudfoundry/garden-runc-release
+  
+git clone https://github.com/concourse/concourse-bosh-deployment.git
+
+cd concourse-bosh-deployment/cluster
+
+bosh -e vbox update-cloud-config cloud_configs/vbox.yml
+
+bosh -e vbox deploy -d concourse concourse.yml \
+  -l ../versions.yml \
+  --vars-store cluster-creds.yml \
+  -o operations/static-web.yml \
+  -o operations/basic-auth.yml \
+  --var local_user.username=admin \
+  --var local_user.password=admin \
+  --var web_ip=10.244.15.2 \
+  --var external_url=http://10.244.15.2:8080 \
+  --var network_name=concourse \
+  --var web_vm_type=concourse \
+  --var db_vm_type=concourse \
+  --var db_persistent_disk_type=db \
+  --var worker_vm_type=concourse \
+  --var deployment_name=concourse \
+  --var azs=[z1]
+
+fly -t ci login -c http://10.244.15.2:8080 -u admin -p admin
+bosh -e vbox -d concourse ssh web/0 --opts ' -L 8080:localhost:8080'
+############### default PATH ###############
+export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin
+
+
+
+
+
+
+
+
+
+
+
+

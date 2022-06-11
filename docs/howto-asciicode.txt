@@ -1,8 +1,7 @@
-
-integrate to maven:
+# integrate to maven:
 step-1: create docs folder in project root
 step-2: create images folder as a sub directory of docs
-step-3: add all .adoc or .asciidoc files to docs folder
+step-3: add all .adoc or .asciidoc files to the docs folder
 step-4: add following plugin
 <build>
   <defaultGoal>generate-resources</defaultGoal>

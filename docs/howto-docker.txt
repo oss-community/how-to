@@ -33,7 +33,6 @@ step-3: docker-machine create --driver=virtualbox test
 # install docker on mac
 step-1: download https://docs.docker.com/desktop/mac/install/
 step-2: install setup
-
 # install docker machine:
 step-1: curl -L https://github.com/docker/machine/releases/download/v0.16.2/docker-machine-`uname -s`-`uname -m` >/usr/local/bin/docker-machine && \
   chmod +x /usr/local/bin/docker-machine

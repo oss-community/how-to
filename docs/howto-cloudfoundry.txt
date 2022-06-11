@@ -1,0 +1,101 @@
+## install cf cli
+step-1: download zip/tgz file from https://github.com/cloudfoundry/cli/wiki/V8-CLI-Installation-Guide
+step-2: extract archive file
+# linux/unix
+tar -xvzf ./cf8-cli*.tar.gz
+# windows
+tar -m -xf .\cf8-cli*.zip
+step-3: add the folder to system path
+# linux/unix
+chmod +x ./cf-path
+sed -i 's/$PATH/$cf-path:$PATH/g' .bashrc
+source ~/.bashrc
+# windows
+setx /M PATH "%PATH%;bosh-path"
+step-4: cf version
+## install bosh cli
+step-1: download https://github.com/cloudfoundry/bosh-cli/releases
+step-2: add to system path
+# linux/unix
+chmod +x ./bosh-path
+sed -i 's/$PATH/bosh-path:$PATH/g' .bashrc
+source ~/.bashrc
+# mac
+brew install cloudfoundry/tap/bosh-cli
+# windows
+setx /M PATH "%PATH%;bosh-path"
+step-3: bosh -v
+## getting start
+step-1: making directory in workspace
+#linux/unix
+mkdir -p ~/bosh-env/virtualbox
+#windows
+mkdir bosh-env\virtualbox
+step-2: clone bosh deployment
+git clone https://github.com/cloudfoundry/bosh-deployment.git
+
+bosh create-env .\bosh-deployment\bosh.yml ^
+  --state .\state.json ^
+  -o .\bosh-deployment\virtualbox\cpi.yml ^
+  -o .\bosh-deployment\virtualbox\outbound-network.yml ^
+  -o .\bosh-deployment\bosh-lite.yml ^
+  -o .\bosh-deployment\bosh-lite-runc.yml ^
+  -o .\bosh-deployment\uaa.yml ^
+  -o .\bosh-deployment\credhub.yml ^
+  -o .\bosh-deployment\jumpbox-user.yml ^
+  --vars-store .\creds.yml ^
+  -v director_name=bosh-lite ^
+  -v internal_ip=192.168.56.6 ^
+  -v internal_gw=192.168.56.1 ^
+  -v internal_cidr=192.168.56.0/24 ^
+  -v outbound_network_name=NatNetwork
+
+
+
+FOR /F %A IN ('bosh int ./creds.yml --path /admin_password') set TEST=%~A
+FOR /F %A IN ('echo hi') set TEST=%~A
+
+
+bosh create-env ./bosh-deployment/bosh.yml \
+  --state ./state.json \
+  -o ./bosh-deployment/virtualbox/cpi.yml \
+  -o ./bosh-deployment/virtualbox/outbound-network.yml \
+  -o ./bosh-deployment/bosh-lite.yml \
+  -o ./bosh-deployment/bosh-lite-runc.yml \
+  -o ./bosh-deployment/uaa.yml \
+  -o ./bosh-deployment/credhub.yml \
+  -o ./bosh-deployment/jumpbox-user.yml \
+  --vars-store ./creds.yml \
+  -v director_name=bosh-lite \
+  -v internal_ip=192.168.56.6 \
+  -v internal_gw=192.168.56.1 \
+  -v internal_cidr=192.168.56.0/24 \
+  -v outbound_network_name=NatNetwork
+
+
+
+
+
+
+
+
+
+
+
+
+
+cfdev
+install by cf cli
+download Acrylic.exe from http://mayakron.altervista.org/support/acrylic/Home.htm
+cf install-plugin -r CF-Community cfdev
+cf dev start
+
+install manually
+download plugin parts from https://network.pivotal.io/products/pcfdev#/releases/690049
+cf dev start -f .\pcfdev-v1.3.1-windows.tgz
+
+Windows (cmd): copy /b .\pcfdev-v1.3.1-windows.tgz-aa + .\pcfdev-v1.3.1-windows.tgz-ab .\pcfdev-v1.3.1-windows.tgz
+Unix: cat pcfdev-v1.3.1-darwin.tgz-aa pcfdev-v1.3.1-darwin.tgz-ab > pcfdev-v1.3.1-darwin.tgz
+cf dev start -f ./pcfdev-v1.3.1-windows.tgz
+
+

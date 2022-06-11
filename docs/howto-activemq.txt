@@ -1,12 +1,36 @@
+########################################################################################################################
+# linux
 step-1: go to https://downloads.apache.org/activemq and download current version
-    linux/unix: curl -O https://downloads.apache.org/activemq/5.17.0/apache-activemq-5.17.0-bin.tar.gz
-    windows:    curl -O https://downloads.apache.org/activemq/5.17.0/apache-activemq-5.17.0-bin.zip
+    curl -O https://downloads.apache.org/activemq/5.17.0/apache-activemq-5.17.0-bin.tar.gz
 step-2: extract archive file
-    linux/unix: tar -xvzf ./apache-activemq-5.17.0-bin.tar.gz
-    windows:    tar -m -xf .\apache-activemq-5.17.0-bin.zip
-step-3: apache-activemq-5.17.0/bin/activemq start
-step-4: http://localhost:8161/ admin:admin
-step-5: ./apache-activemq-5.16.0/bin/activemq stop
-step-6: kill process
-        linux/unix: kill $(lsof -ti:8161)
-        windows:    for /f "tokens=5" %p in ( 'netstat -aon ^| findstr "8161"')  do taskkill /f /pid %p
+    extract: tar -xvzf ./apache-activemq-5.17.0-bin.tar.gz
+    rename: mv apache-activemq-5.17.0 activemq
+step-3: run queue
+    ./activemq/bin/activemq start
+step-4: login via browser
+    url: http://localhost:8161/
+    username: admin
+    password: admin
+step-5: stop queue
+    ./activemq/bin/activemq stope
+step-6: kill process based on port
+        kill $(lsof -ti:8161)
+
+########################################################################################################################
+# windows
+step-1: go to https://downloads.apache.org/activemq and download current version
+    curl -O https://downloads.apache.org/activemq/5.17.0/apache-activemq-5.17.0-bin.zip
+step-2: extract archive file
+    extract: tar -m -xf .\apache-activemq-5.17.0-bin.zip
+    rename: ren apache-activemq-5.17.0 activemq
+step-3: run queue
+    .\activemq\bin\activemq start
+step-4: login via browser
+    url: http://localhost:8161/
+    username: admin
+    password: admin
+step-5: stop queue
+    .\activemq\bin\activemq stop
+step-6: kill process based on port
+        for /f "tokens=5" %p in ( 'netstat -aon ^| findstr "8161"')  do taskkill /f /pid %p
+########################################################################################################################
