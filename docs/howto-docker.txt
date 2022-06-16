@@ -1,9 +1,5 @@
-==============================setup============================
-==========================================================
-# install docker on windows
-step-1: download: https://docs.docker.com/desktop/windows/install/
-step-2: install docker desktop setup
-
+########################################################################################################################
+# windows
 # install wsl (Windows Subsystem for Linux) on backend
 step-1: brows guide, https://docs.microsoft.com/en-us/windows/wsl/install-manual
 step-2: dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
@@ -12,41 +8,65 @@ step-4: download WSL2 Linux kernel update package for x64 machines, https://wsls
 step-5: wsl --set-default-version 2
 step-6: download wsl (debian, ubuntu, ...), https://aka.ms/wslstore
 
-# install docker machine:
+# docker
+step-1: download: https://docs.docker.com/desktop/windows/install/
+step-2: install docker desktop setup
+
+# docker machine:
 step-1: curl -L https://github.com/docker/machine/releases/download/v0.16.2/docker-machine-Windows-x86_64.exe > "C:\temp-directory"
 step-2: copy from temp-directory to C:\Program Files\Docker\Docker\resources\bin
 step-3: docker-machine --version
 step-4: docker-machine create --driver=virtualbox test
-==========================================================
-==========================================================
-# install docker on linux
+########################################################################################################################
+# linux
 step-1: brows guide, https://docs.docker.com/engine/install/
+step-2: sudo apt-get remove docker docker-engine docker.io containerd runc
+step-3: sudo apt-get update
+step-4: sudo apt-get install ca-certificates curl gnupg lsb-release
+step-5: curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+step-6: echo \
+           "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu \
+           $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
-# install docker machine:
+step-7: sudo apt-get update
+step-8: sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin
+
+step-9: sudo systemctl status docker
+step-10: sudo usermod -aG docker ${USER}
+
+step-11: docker --version
+step-12: docker compose version
+
+step-0: echo "export DOCKER_CONFIG=\$HOME/.docker" >> ${HOME}/.bashrc
+
+# docker machine:
 step-1: curl -L https://github.com/docker/machine/releases/download/v0.16.2/docker-machine-`uname -s`-`uname -m` >/tmp/docker-machine &&
     chmod +x /tmp/docker-machine &&
     sudo cp /tmp/docker-machine /usr/local/bin/docker-machine
 step-2: docker-machine --version
 step-3: docker-machine create --driver=virtualbox test
-==========================================================
-==========================================================
-# install docker on mac
+########################################################################################################################
+# mac
 step-1: download https://docs.docker.com/desktop/mac/install/
 step-2: install setup
-# install docker machine:
+# docker machine:
 step-1: curl -L https://github.com/docker/machine/releases/download/v0.16.2/docker-machine-`uname -s`-`uname -m` >/usr/local/bin/docker-machine && \
   chmod +x /usr/local/bin/docker-machine
 step-2: Go to System Preferences > Security & Privacy Then hit the "Allow" button to let Oracle (VirtualBox) load.
 step-3: sudo "/Library/Application Support/VirtualBox/LaunchDaemons/VirtualBoxStartup.sh" restart
 step-4: docker-machine --version
 step-5: docker-machine create --driver=virtualbox test
-==============================command============================
-==========================================================
+########################################################################################################################
+# command
+
+# info
 docker --version
 docker -v
 docker ps [--all]
 docker image ls
 docker container ls [-la]
+
+# creation
 docker pull image-name
 docker create image-name
 docker start [-a] image-id
@@ -56,7 +76,7 @@ docker logs image-id
 docker run [-p 8080:8080] [-it] image-name command
 run = create + start
 
-# delete:
+# deletion
 docker image rm image-name/tag
 docker system prune [-a]
 docker volume prune
@@ -64,7 +84,7 @@ delete from file system
     1. mac: rm  Library/Containers/com.docker.docker/Data/vms/0/data/*
     2. restart docker
 
-# connect to container
+# container
 docker exec -it container-id command
 docker exec -it container-id sh
 
@@ -78,6 +98,7 @@ step-3: docker commit -c 'CMD [""]' image-id
 
 # docker compose
 docker-compose up [--build] [-d]
+########################################################################################################################
 
 
 

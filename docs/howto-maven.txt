@@ -1,0 +1,21 @@
+########################################################################################################################
+download maven from https://maven.apache.org/download.cgi
+
+sudo tar xzvf ~/Downloads/apache-maven-3.8.5-bin.tar.gz -C /opt/
+sudo mv /opt/apache-maven-3.8.5/ /opt/maven
+
+sudo chown ${USER} -R /opt/
+sudo chmod 765 -R /opt/
+sudo chmod +x -R /opt/maven/bin/
+
+
+echo "export M2_HOME=/opt/maven" >> ${HOME}/.bashrc
+
+if PATH is exit in .bashrc
+	sed -i 's/PATH=/PATH=$M2_HOME\/bin:/' .bashrc
+else
+	echo "export PATH=\$M2_HOME/bin:$PATH" >> ${HOME}/.bashrc
+
+source ~/.bashrc
+mvn -version
+########################################################################################################################

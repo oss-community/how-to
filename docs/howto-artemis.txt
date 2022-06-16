@@ -1,3 +1,4 @@
+########################################################################################################################
 # linux
 step-1: download
     curl -O https://ftp.halifax.rwth-aachen.de/apache/activemq/activemq-artemis/2.16.0/apache-artemis-2.16.0-bin.tar.gz
@@ -16,4 +17,4 @@ step-6: stop instance
     ./broker-name/bin/artemis-service" stop
 step-7: kill process based on port
     kill $(lsof -ti:8161)
-
+########################################################################################################################

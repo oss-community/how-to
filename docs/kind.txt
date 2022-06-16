@@ -1,0 +1,70 @@
+########################################################################################################################
+# linux ubuntu
+step-1: install docker
+step-1: install kubernetes
+step-3: install kind
+    curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.12.0/kind-linux-amd64
+    chmod +x ./kind
+    sudo mv ./kind /usr/local/bin/kind
+    kind --version
+
+step-4: config system permanently
+    echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
+    echo fs.inotify.max_user_instances = 512 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
+
+# current console #
+# sudo sysctl fs.inotify.max_user_watches=524288
+# sudo sysctl fs.inotify.max_user_instances=512
+#
+# another permanent solution #
+# sudo gedit /etc/sysctl.conf
+# fs.inotify.max_user_watches=524288
+# fs.inotify.max_user_instances=512
+# sudo sysctl -p
+
+step-5: create local cluster
+    kind create cluster
+
+step-6: install dashboard
+    kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.5.1/aio/deploy/recommended.yaml
+
+step-7: create file named service-account.yaml with the following content:
+========================================================
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: admin-user
+  namespace: kubernetes-dashboard
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: admin-user
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: admin-user
+  namespace: kubernetes-dashboard
+========================================================
+step-8: apply account file
+    kubectl apply -f service-account.yaml
+
+step-9: see new account
+    kubectl describe serviceaccount admin-user -n kubernetes-dashboard
+    kubectl describe secret admin-user-token-???? -n kubernetes-dashboard
+
+step-10: login to kind dashboard
+    kubectl -n kubernetes-dashboard get secret $(kubectl -n kubernetes-dashboard get sa/admin-user -o jsonpath="{.secrets[0].name}") -o go-template="{{.data.token | base64decode}}"
+    kubectl proxy
+    http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/.
+########################################################################################################################
+# command
+kind create cluster
+kubectl cluster-info --context kind-kind
+kind delete clusters kind
+kubectl apply -f file-name.yaml

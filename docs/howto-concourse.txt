@@ -20,7 +20,4 @@
 fly -t target-name set-pipeline -p pipeline-name -c pipeline-file.yml
 fly -t target-name unpause-pipeline -p pipeline-name
 fly -t target-name trigger-job --job pipeline-name/job-name --watch
-
-
-
-
+########################################################################################################################
