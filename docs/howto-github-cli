@@ -1,0 +1,18 @@
+curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+apt update
+apt install gh
+ls -al ~/.ssh
+ssh-keygen -t rsa -b 4096 -C "samanalishiri@gmail.com"
+ls -al ~/.ssh
+eval "$(ssh-agent -s)"
+ssh-add ~/.ssh/id_rsa
+gh auth login
+	github.com
+	ssh
+	token
+gh ssh-key add ~/.ssh/id_rsa.pub
+ssh -T git@github.com
+
+git config --global user.email samanalishiri@gmail.com
+git config --global user.name samanalishiri

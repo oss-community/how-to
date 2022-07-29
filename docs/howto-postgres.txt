@@ -1,0 +1,44 @@
+fedora
+1. sudo dnf install postgresql postgresql-server
+2. sudo postgresql-setup initdb                  # initialize PG cluster
+3. sudo systemctl start postgresql               # start cluster
+4.* sudo su - postgres                            # login as DB admin
+5.* createdb quick-start
+6. edit /var/lib/pgsql/data/pg_hba.conf
+change
+local   all             all                                     peer
+to
+local   all             all                                     md5
+7. sudo systemctl restart postgresql
+
+
+
+ubuntu
+how to insttall postgresql database
+ubuntu: sudo apt-get install postgresql-*<press tab key>
+_______________________________________________________________________
+how to install pgAdmin?
+ubuntu: sudo apt-get install pgadmin3
+_______________________________________________________________________
+first connection
+sudo -u postgres psql postgres
+
+change password: alter user postgres with password 'postgres';
+
+
+exit from postgres database
+type: \q
+_______________________________________________________________________
+how to create user?
+sudo -u postgres createuser -D -A -P db-user-name
+example: sudo -u postgres createuser -D -A -P root
+_______________________________________________________________________
+how to create database?
+sudo -u postgres createdb -O db-user-name db-name
+example: sudo -u postgres createdb -O root ems-osict
+_______________________________________________________________________
+how to run sql file?
+sudo -u db-user-name psql -d db-name -f file-name.sql
+example: sudo -u root psql -d ems-osict -f ems-osict.sql
+_______________________________________________________________________
+psql postgres postgres < database.sql

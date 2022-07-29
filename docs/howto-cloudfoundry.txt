@@ -1,3 +1,131 @@
+########################################################################################################################
+# linux, ubuntu
+curl -L "https://packages.cloudfoundry.org/stable?release=linux64-binary&version=v8&source=github" | tar -zx
+
+sudo mv cf8 /usr/local/bin
+sudo mv cf /usr/local/bin
+
+
+#sudo curl -o /usr/share/bash-completion/completions/cf8 https://raw.githubusercontent.com/cloudfoundry/cli-ci/master/ci/#installers/completion/cf8
+
+cf version
+
+
+sudo apt-get install -y build-essential zlib1g-dev ruby ruby-dev openssl libxslt1-dev libxml2-dev libssl-dev libreadline-dev libyaml-dev libsqlite3-dev sqlite3
+
+download bosh cli from https://github.com/cloudfoundry/bosh-cli/releases
+
+sudo mv ~/Downloads/bosh-??? ~/Downloads/bosh
+sudo chmod +x ~/Downloads/bosh
+sudo mv ~/Downloads/bosh /usr/local/bin/bosh
+bosh -v
+
+sudo apt-get update
+
+sudo apt-get install -y build-essential zlib1g-dev ruby ruby-dev openssl \
+libxslt1-dev libxml2-dev libssl-dev libreadline-dev \
+libyaml-dev libsqlite3-dev sqlite3
+
+sudo apt-get install virtualbox
+VBoxManage --version
+sudo apt install virtualbox-ext-pack
+sudo apt install qemu-kvm libvirt-doc
+
+git clone https://github.com/cloudfoundry/bosh-deployment ~/workspace/bosh-deployment
+mkdir -p ~/deployments/vbox
+cd ~/deployments/vbox
+sudo ip route add   10.244.0.0/16 via 192.168.56.6
+sudo ip route add   192.168.56.0/24 via 192.168.56.6
+
+bosh create-env ~/workspace/bosh-deployment/bosh.yml \
+  --state ./state.json \
+  -o ~/workspace/bosh-deployment/virtualbox/cpi.yml \
+  -o ~/workspace/bosh-deployment/virtualbox/outbound-network.yml \
+  -o ~/workspace/bosh-deployment/bosh-lite.yml \
+  -o ~/workspace/bosh-deployment/bosh-lite-runc.yml \
+  -o ~/workspace/bosh-deployment/uaa.yml \
+  -o ~/workspace/bosh-deployment/credhub.yml \
+  -o ~/workspace/bosh-deployment/jumpbox-user.yml \
+  --vars-store ./creds.yml \
+  -v director_name=bosh-lite \
+  -v internal_ip=192.168.56.6 \
+  -v internal_gw=192.168.56.1 \
+  -v internal_cidr=192.168.56.0/24 \
+  -v outbound_network_name=NatNetwork
+
+bosh create-env --recreate ~/workspace/bosh-deployment/bosh.yml \
+  --state ./state.json \
+  -o ~/workspace/bosh-deployment/virtualbox/cpi.yml \
+  -o ~/workspace/bosh-deployment/virtualbox/outbound-network.yml \
+  -o ~/workspace/bosh-deployment/bosh-lite.yml \
+  -o ~/workspace/bosh-deployment/bosh-lite-runc.yml \
+  -o ~/workspace/bosh-deployment/uaa.yml \
+  -o ~/workspace/bosh-deployment/credhub.yml \
+  -o ~/workspace/bosh-deployment/jumpbox-user.yml \
+  --vars-store ./creds.yml \
+  -v director_name=bosh-lite \
+  -v internal_ip=192.168.56.6 \
+  -v internal_gw=192.168.56.1 \
+  -v internal_cidr=192.168.56.0/24 \
+  -v outbound_network_name=NatNetwork
+
+export BOSH_CLIENT=admin
+export BOSH_CLIENT_SECRET=`bosh int ./creds.yml --path /admin_password`
+bosh alias-env vbox -e 192.168.56.6 --ca-cert <(bosh int ./creds.yml --path /director_ssl/ca)
+
+
+bosh -e vbox env
+
+bosh -e vbox update-cloud-config ~/workspace/bosh-deployment/warden/cloud-config.yml
+bosh -e vbox upload-stemcell  https://bosh.io/d/stemcells/bosh-warden-boshlite-ubuntu-xenial-go_agent
+
+#bosh -e vbox upload-stemcell \
+#  https://bosh.io/d/stemcells/bosh-warden-boshlite-ubuntu-xenial-go_agent?v=315.45 \
+#  --sha1 674cd3c1e64d8c51e62770697a63c07ca04e9bbd
+
+bosh -e vbox -d zookeeper deploy <(wget -O- https://raw.githubusercontent.com/cppforlife/zookeeper-release/master/manifests/zookeeper.yml)
+bosh -e vbox -d zookeeper run-errand smoke-tests
+
+
+https://raw.githubusercontent.com/cppforlife/zookeeper-release/master/manifests/zookeeper.yml
+
+
+
+#bosh -e vbox upload-stemcell https://bosh.io/d/stemcells/bosh-warden-boshlite-ubuntu-trusty-#go_agent?v=3468.17 \
+#  --sha1 1dad6d85d6e132810439daba7ca05694cec208ab
+
+bosh -e vbox upload-stemcell https://bosh.io/d/stemcells/bosh-warden-boshlite-ubuntu-trusty-go_agent
+bosh -e vbox upload-release https://bosh.io/d/github.com/cloudfoundry/garden-runc-release
+
+git clone https://github.com/concourse/concourse-bosh-deployment.git
+
+cd concourse-bosh-deployment/cluster
+
+bosh -e vbox update-cloud-config cloud_configs/vbox.yml
+
+bosh -e vbox deploy -d concourse concourse.yml \
+  -l ../versions.yml \
+  --vars-store cluster-creds.yml \
+  -o operations/static-web.yml \
+  -o operations/basic-auth.yml \
+  --var local_user.username=admin \
+  --var local_user.password=admin \
+  --var web_ip=10.244.15.2 \
+  --var external_url=http://10.244.15.2:8080 \
+  --var network_name=concourse \
+  --var web_vm_type=concourse \
+  --var db_vm_type=concourse \
+  --var db_persistent_disk_type=db \
+  --var worker_vm_type=concourse \
+  --var deployment_name=concourse \
+  --var azs=[z1]
+
+fly -t ci login -c http://10.244.15.2:8080 -u admin -p admin
+bosh -e vbox -d concourse ssh web/0 --opts ' -L 8080:localhost:8080'
+
+########################################################################################################################
+# windows
+########################################################################################################################
 ## install cf cli
 step-1: download zip/tgz file from https://github.com/cloudfoundry/cli/wiki/V8-CLI-Installation-Guide
 step-2: extract archive file

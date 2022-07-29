@@ -49,7 +49,7 @@ step-11: check version in order to test installation
 
 step-12: edit docker service file
     sudo gedit /usr/lib/systemd/system/docker.service
-    add =>>> ExecStart=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock --exec-opt native.cgroupdriver=systemd
+    add => ExecStart=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock --exec-opt native.cgroupdriver=systemd
 
 step-13: check restart the services and check status of services
     sudo systemctl daemon-reload

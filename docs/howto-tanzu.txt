@@ -1,0 +1,50 @@
+########################################################################################################################
+# linux, ubuntu
+step-1:install docker, kubernetes and kind
+step-2: download and install
+    https://tanzucommunityedition.io/docs/v0.11/cli-installation/
+    tar -xzvf ~/Downloads/tce-linux-amd64-v0.11.0.tar.gz -C ~/Downloads/
+    ~/Downloads/tce-linux-amd64-v0.11.0/install.sh
+    tanzu version
+
+step-3: clear docker
+    docker kill $(docker ps -q)
+    docker system prune -a --volumes
+
+step-4 : download HAproxy
+    https://hub.docker.com/r/kindest/haproxy/tags
+    docker pull kindest/haproxy:v20220207-ca68f7d4
+
+step-5: create cluster manager
+    # tanzu management-cluster create -i docker --name tce-local-test -v 10 --plan dev --ceip-participation=false
+    tanzu mc create -i docker --name tce-local-test -v 10 --plan dev --ceip-participation=false
+
+step-6: install network driver
+    kubectl proxy
+    kubectl apply -f https://raw.githubusercontent.com/antrea-io/antrea/main/build/yamls/antrea.yml
+    kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+
+step-7: config kubernetes
+    tanzu management-cluster get
+    tanzu management-cluster kubeconfig get tce-local-test --admin
+    kubectl config use-context tce-local-test-admin@tce-local-test
+
+step-8: create cluster
+    tanzu cluster create cluster-test --plan dev
+    tanzu cluster list
+    tanzu cluster kubeconfig get cluster-test --admin
+    kubectl config use-context cluster-test-admin@cluster-test
+
+step-9: install dashboard
+download from https://github.com/vmware-tanzu/octant or https://github.com/vmware-tanzu/octant/releases
+
+    tar -xzvf ~/Downloads/octant_0.25.1_Linux-64bit.tar.gz -C /opt
+    mv /opt/octant_0.25.1_Linux-64bit /opt/octant-home
+    if bashrc is not exit
+        echo "export OCTANT_HOME=/opt/octant-home" >> ${HOME}/.bashrc
+    if there is bashrc
+        sed -i 's/PATH=/PATH=$OCTANT_HOME:/' .bashrc
+    source ~/.bashrc
+    octant version
+    octant
+########################################################################################################################
