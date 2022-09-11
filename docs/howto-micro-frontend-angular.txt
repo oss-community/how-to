@@ -1,0 +1,185 @@
+########################################################################################################################
+# MICRO FRONTEND
+########################################################################################################################
+# create root
+step-1: ng new workspace-nme --create-application false
+step-2: cd workspace-nme
+step-3: ng generate application app-name --routing --style=scss --prefix=name
+step-4: npm install
+step-5: import following modules
+    CommonModule,
+    BrowserModule,
+    AppRoutingModule,
+    FontAwesomeModule,
+    BrowserModule,
+    AppRoutingModule,
+    BrowserAnimationsModule,
+    HttpClientModule,
+    FontAwesomeModule,
+    MatToolbarModule,
+    MatIconModule,
+    MatCardModule,
+    MatButtonModule,
+    MatProgressSpinnerModule,
+    FormsModule
+step-6: add providers: [{ provide: APP_BASE_HREF, useValue: '/' }] to app-routing.module.ts
+step-7: replace following code to whole content of index.html
+<!DOCTYPE html>
+<html>
+<head>
+  <meta
+    content="default-src *  data: blob: 'unsafe-inline' 'unsafe-eval'; script-src * 'unsafe-inline' 'unsafe-eval'; connect-src * 'unsafe-inline'; img-src * data: blob: 'unsafe-inline'; frame-src *; style-src * data: blob: 'unsafe-inline'; font-src * data: blob: 'unsafe-inline';"
+    http-equiv="Content-Security-Policy">
+  <meta charset="utf-8">
+  <meta content="IE=edge" http-equiv="X-UA-Compatible">
+  <title>Pine UI</title>
+  <meta content="width=device-width, initial-scale=1" name="viewport">
+  <meta content="systemjs-importmap" name="importmap-type">
+  <script type="systemjs-importmap">
+      {
+        "imports": {
+          "child-app-name": "http://localhost:4201/main.js",
+          "single-spa": "https://cdnjs.cloudflare.com/ajax/libs/single-spa/4.3.5/system/single-spa.min.js"
+        }
+      }
+
+  </script>
+  <link as="script" crossorigin="anonymous" href="https://cdnjs.cloudflare.com/ajax/libs/single-spa/4.3.5/system/single-spa.min.js" rel="preload"/>
+  <script src='https://unpkg.com/core-js-bundle@3.1.4/minified.js'></script>
+  <script src="https://unpkg.com/zone.js"></script>
+  <script src="https://unpkg.com/import-map-overrides@1.6.0/dist/import-map-overrides.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/systemjs/4.0.0/system.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/systemjs/4.0.0/extras/amd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/systemjs/4.0.0/extras/named-exports.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/systemjs/4.0.0/extras/named-register.min.js"></script>
+  <style>
+  </style>
+</head>
+<body>
+<script>
+  System.import('single-spa').then(function (singleSpa) {
+    singleSpa.registerApplication(
+      'child-app-name',
+      function () {
+        return System.import('child-app-name');
+      },
+      function (location) {
+        // return location.pathname.startsWith('/child-app-name');
+        return true;
+      }
+    )
+
+    singleSpa.start();
+  })
+</script>
+<import-map-overrides-full></import-map-overrides-full>
+</body>
+</html>
+step-8: npm start
+
+# create child
+step-1: ng new child-workspace-name --create-application false
+step-2: cd child-workspace-name
+step-3: ng generate application child-app-name --routing --style=scss --prefix=name
+step-4: npm install
+step-5: npm uninstall @schematics/angular
+step-6: npm install @schematics/angular@9.1.0
+step-7: ng add @angular/material
+step-8: ng add single-spa-angular
+step-9: npm install
+step-10: add providers: [{ provide: APP_BASE_HREF, useValue: '/' }] to app-routing.module.ts
+step-11: add { path: '**', component: EmptyRouteComponent } to your app-routing.module.ts
+step-12: add a declaration for EmptyRouteComponent in app.module.ts
+step-13: import following modules
+    CommonModule,
+    BrowserModule,
+    AppRoutingModule,
+    FontAwesomeModule,
+    BrowserModule,
+    AppRoutingModule,
+    BrowserAnimationsModule,
+    HttpClientModule,
+    FontAwesomeModule,
+    MatToolbarModule,
+    MatIconModule,
+    MatCardModule,
+    MatButtonModule,
+    MatProgressSpinnerModule,
+    FormsModule
+step-14: replace following code to whole content of index.html
+<!DOCTYPE html>
+<html>
+<head>
+  <meta
+    content="default-src *  data: blob: 'unsafe-inline' 'unsafe-eval'; script-src * 'unsafe-inline' 'unsafe-eval'; connect-src * 'unsafe-inline'; img-src * data: blob: 'unsafe-inline'; frame-src *; style-src * data: blob: 'unsafe-inline'; font-src * data: blob: 'unsafe-inline';"
+    http-equiv="Content-Security-Policy">
+  <meta charset="utf-8">
+  <meta content="IE=edge" http-equiv="X-UA-Compatible">
+  <title>Pine UI</title>
+  <meta content="width=device-width, initial-scale=1" name="viewport">
+  <meta content="systemjs-importmap" name="importmap-type">
+  <script type="systemjs-importmap">
+      {
+        "imports": {
+          "child-app-name": "http://localhost:4201/main.js",
+          "single-spa": "https://cdnjs.cloudflare.com/ajax/libs/single-spa/4.3.5/system/single-spa.min.js"
+        }
+      }
+
+  </script>
+  <link as="script" crossorigin="anonymous" href="https://cdnjs.cloudflare.com/ajax/libs/single-spa/4.3.5/system/single-spa.min.js" rel="preload"/>
+  <script src='https://unpkg.com/core-js-bundle@3.1.4/minified.js'></script>
+  <script src="https://unpkg.com/zone.js"></script>
+  <script src="https://unpkg.com/import-map-overrides@1.6.0/dist/import-map-overrides.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/systemjs/4.0.0/system.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/systemjs/4.0.0/extras/amd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/systemjs/4.0.0/extras/named-exports.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/systemjs/4.0.0/extras/named-register.min.js"></script>
+  <style>
+  </style>
+</head>
+<body>
+<script>
+  System.import('single-spa').then(function (singleSpa) {
+    singleSpa.registerApplication(
+      'child-app-name',
+      function () {
+        return System.import('child-app-name');
+      },
+      function (location) {
+        // return location.pathname.startsWith('/child-app-name');
+        return true;
+      }
+    )
+
+    singleSpa.start();
+  })
+</script>
+<import-map-overrides-full></import-map-overrides-full>
+<*-root></*-root>
+</body>
+</html>
+step-15: npm run build:single-spa:child-app-name
+step-16: npm run serve:single-spa:child-app-name
+
+# create library
+step-1: ng generate library lib-name
+step-2: ng build lib-name
+step-3: ng test lib-name
+step-4: ng lint lib-name
+step-5: npm install ./projects/lib-name
+step-6: npm install jquery --save
+step-7: npm install popper.js --save
+step-8: npm install bootstrap --save
+step-10: npm install --save @ng-bootstrap/ng-bootstrap
+
+# provide libraries to the local projects
+step-1: cd ./dist/lib-name
+step-2: npm link
+step-3: cd project-name
+step-4: npm link lib-name
+
+# in order to publish
+step-1: ng build lib-name --prod
+step-2: cd dist/lib-name
+step-3: npm publish

@@ -12,7 +12,7 @@ gh auth login
 	ssh
 	token
 gh ssh-key add ~/.ssh/id_rsa.pub
-ssh -T git@github.com
+ssh -T git@github.com -yes
 
 git config --global user.email samanalishiri@gmail.com
 git config --global user.name samanalishiri
