@@ -1,39 +1,55 @@
 ########################################################################################################################
-# linux, ubuntu
-curl -L "https://packages.cloudfoundry.org/stable?release=linux64-binary&version=v8&source=github" | tar -zx
+# linux/unix
+########################################################################################################################
+# install cf cli
+step-1: download zip/tgz file from https://github.com/cloudfoundry/cli/wiki/V8-CLI-Installation-Guide and extract it
+tar -xvzf ./cf8-cli*.tar.gz
+chmod +x ./cf-path
+sed -i 's/$PATH/$cf-path:$PATH/g' .bashrc #redhat
+sed -i 's/PATH=/PATH=$cf-path:/' .bashrc #debian
+source ~/.bashrc
 
+## install bosh cli
+step-1: download https://github.com/cloudfoundry/bosh-cli/releases
+step-2: add to system path
+chmod +x ./bosh-path
+sed -i 's/$PATH/bosh-path:$PATH/g' .bashrc #redhat
+sed -i 's/PATH=/PATH=$bosh-path:/' .bashrc #debian
+source ~/.bashrc
+step-3: bosh -v
+
+########################################################################################################################
+# linux, ubuntu
+########################################################################################################################
+# install cf CLI
+curl -L "https://packages.cloudfoundry.org/stable?release=linux64-binary&version=v8&source=github" | tar -zx
 sudo mv cf8 /usr/local/bin
 sudo mv cf /usr/local/bin
-
-
-#sudo curl -o /usr/share/bash-completion/completions/cf8 https://raw.githubusercontent.com/cloudfoundry/cli-ci/master/ci/#installers/completion/cf8
-
 cf version
-
 
 sudo apt-get install -y build-essential zlib1g-dev ruby ruby-dev openssl libxslt1-dev libxml2-dev libssl-dev libreadline-dev libyaml-dev libsqlite3-dev sqlite3
 
-download bosh cli from https://github.com/cloudfoundry/bosh-cli/releases
-
+# install bosh CLI
+# download bosh cli from https://github.com/cloudfoundry/bosh-cli/releases
 sudo mv ~/Downloads/bosh-??? ~/Downloads/bosh
 sudo chmod +x ~/Downloads/bosh
 sudo mv ~/Downloads/bosh /usr/local/bin/bosh
 bosh -v
 
 sudo apt-get update
+sudo apt-get install -y build-essential zlib1g-dev ruby ruby-dev openssl libxslt1-dev libxml2-dev libssl-dev libreadline-dev libyaml-dev libsqlite3-dev sqlite3
 
-sudo apt-get install -y build-essential zlib1g-dev ruby ruby-dev openssl \
-libxslt1-dev libxml2-dev libssl-dev libreadline-dev \
-libyaml-dev libsqlite3-dev sqlite3
-
+# install virtualbox
 sudo apt-get install virtualbox
 VBoxManage --version
 sudo apt install virtualbox-ext-pack
 sudo apt install qemu-kvm libvirt-doc
 
+# prepare deployment
 git clone https://github.com/cloudfoundry/bosh-deployment ~/workspace/bosh-deployment
 mkdir -p ~/deployments/vbox
 cd ~/deployments/vbox
+
 sudo ip route add   10.244.0.0/16 via 192.168.56.6
 sudo ip route add   192.168.56.0/24 via 192.168.56.6
 
@@ -72,37 +88,23 @@ bosh create-env --recreate ~/workspace/bosh-deployment/bosh.yml \
 export BOSH_CLIENT=admin
 export BOSH_CLIENT_SECRET=`bosh int ./creds.yml --path /admin_password`
 bosh alias-env vbox -e 192.168.56.6 --ca-cert <(bosh int ./creds.yml --path /director_ssl/ca)
-
-
 bosh -e vbox env
 
+# deploy zookeeper
 bosh -e vbox update-cloud-config ~/workspace/bosh-deployment/warden/cloud-config.yml
 bosh -e vbox upload-stemcell  https://bosh.io/d/stemcells/bosh-warden-boshlite-ubuntu-xenial-go_agent
-
-#bosh -e vbox upload-stemcell \
-#  https://bosh.io/d/stemcells/bosh-warden-boshlite-ubuntu-xenial-go_agent?v=315.45 \
-#  --sha1 674cd3c1e64d8c51e62770697a63c07ca04e9bbd
 
 bosh -e vbox -d zookeeper deploy <(wget -O- https://raw.githubusercontent.com/cppforlife/zookeeper-release/master/manifests/zookeeper.yml)
 bosh -e vbox -d zookeeper run-errand smoke-tests
 
-
-https://raw.githubusercontent.com/cppforlife/zookeeper-release/master/manifests/zookeeper.yml
-
-
-
-#bosh -e vbox upload-stemcell https://bosh.io/d/stemcells/bosh-warden-boshlite-ubuntu-trusty-#go_agent?v=3468.17 \
-#  --sha1 1dad6d85d6e132810439daba7ca05694cec208ab
-
+# deploy concourse
 bosh -e vbox upload-stemcell https://bosh.io/d/stemcells/bosh-warden-boshlite-ubuntu-trusty-go_agent
 bosh -e vbox upload-release https://bosh.io/d/github.com/cloudfoundry/garden-runc-release
 
 git clone https://github.com/concourse/concourse-bosh-deployment.git
-
 cd concourse-bosh-deployment/cluster
 
 bosh -e vbox update-cloud-config cloud_configs/vbox.yml
-
 bosh -e vbox deploy -d concourse concourse.yml \
   -l ../versions.yml \
   --vars-store cluster-creds.yml \
@@ -126,41 +128,21 @@ bosh -e vbox -d concourse ssh web/0 --opts ' -L 8080:localhost:8080'
 ########################################################################################################################
 # windows
 ########################################################################################################################
-## install cf cli
-step-1: download zip/tgz file from https://github.com/cloudfoundry/cli/wiki/V8-CLI-Installation-Guide
-step-2: extract archive file
-# linux/unix
-tar -xvzf ./cf8-cli*.tar.gz
-# windows
+## install cf CLI
+# download zip/tgz file from https://github.com/cloudfoundry/cli/wiki/V8-CLI-Installation-Guide and extract it.
 tar -m -xf .\cf8-cli*.zip
-step-3: add the folder to system path
-# linux/unix
-chmod +x ./cf-path
-sed -i 's/$PATH/$cf-path:$PATH/g' .bashrc
-source ~/.bashrc
-# windows
+setx /M PATH "%PATH%;cf-path"
+cf version
+
+# install bosh CLI
+# download https://github.com/cloudfoundry/bosh-cli/releases.
 setx /M PATH "%PATH%;bosh-path"
-step-4: cf version
-## install bosh cli
-step-1: download https://github.com/cloudfoundry/bosh-cli/releases
-step-2: add to system path
-# linux/unix
-chmod +x ./bosh-path
-sed -i 's/$PATH/bosh-path:$PATH/g' .bashrc
-source ~/.bashrc
-# mac
-brew install cloudfoundry/tap/bosh-cli
-# windows
-setx /M PATH "%PATH%;bosh-path"
-step-3: bosh -v
+bosh -v
+
 ## getting start
-step-1: making directory in workspace
-#linux/unix
-mkdir -p ~/bosh-env/virtualbox
-#windows
-mkdir bosh-env\virtualbox
-step-2: clone bosh deployment
 git clone https://github.com/cloudfoundry/bosh-deployment.git
+mkdir bosh-env\virtualbox
+cd bosh-env\virtualbox
 
 bosh create-env .\bosh-deployment\bosh.yml ^
   --state .\state.json ^
@@ -178,52 +160,6 @@ bosh create-env .\bosh-deployment\bosh.yml ^
   -v internal_cidr=192.168.56.0/24 ^
   -v outbound_network_name=NatNetwork
 
-
-
 FOR /F %A IN ('bosh int ./creds.yml --path /admin_password') set TEST=%~A
 FOR /F %A IN ('echo hi') set TEST=%~A
-
-
-bosh create-env ./bosh-deployment/bosh.yml \
-  --state ./state.json \
-  -o ./bosh-deployment/virtualbox/cpi.yml \
-  -o ./bosh-deployment/virtualbox/outbound-network.yml \
-  -o ./bosh-deployment/bosh-lite.yml \
-  -o ./bosh-deployment/bosh-lite-runc.yml \
-  -o ./bosh-deployment/uaa.yml \
-  -o ./bosh-deployment/credhub.yml \
-  -o ./bosh-deployment/jumpbox-user.yml \
-  --vars-store ./creds.yml \
-  -v director_name=bosh-lite \
-  -v internal_ip=192.168.56.6 \
-  -v internal_gw=192.168.56.1 \
-  -v internal_cidr=192.168.56.0/24 \
-  -v outbound_network_name=NatNetwork
-
-
-
-
-
-
-
-
-
-
-
-
-
-cfdev
-install by cf cli
-download Acrylic.exe from http://mayakron.altervista.org/support/acrylic/Home.htm
-cf install-plugin -r CF-Community cfdev
-cf dev start
-
-install manually
-download plugin parts from https://network.pivotal.io/products/pcfdev#/releases/690049
-cf dev start -f .\pcfdev-v1.3.1-windows.tgz
-
-Windows (cmd): copy /b .\pcfdev-v1.3.1-windows.tgz-aa + .\pcfdev-v1.3.1-windows.tgz-ab .\pcfdev-v1.3.1-windows.tgz
-Unix: cat pcfdev-v1.3.1-darwin.tgz-aa pcfdev-v1.3.1-darwin.tgz-ab > pcfdev-v1.3.1-darwin.tgz
-cf dev start -f ./pcfdev-v1.3.1-windows.tgz
-
-
+########################################################################################################################

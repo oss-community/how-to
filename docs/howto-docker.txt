@@ -1,5 +1,6 @@
 ########################################################################################################################
 # windows
+########################################################################################################################
 # install wsl (Windows Subsystem for Linux) on backend
 step-1: brows guide, https://docs.microsoft.com/en-us/windows/wsl/install-manual
 step-2: dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
@@ -19,6 +20,7 @@ step-3: docker-machine --version
 step-4: docker-machine create --driver=virtualbox test
 ########################################################################################################################
 # linux
+########################################################################################################################
 step-1: brows guide, https://docs.docker.com/engine/install/
 step-2: sudo apt-get remove docker docker-engine docker.io containerd runc
 step-3: sudo apt-get update
@@ -47,6 +49,7 @@ step-2: docker-machine --version
 step-3: docker-machine create --driver=virtualbox test
 ########################################################################################################################
 # mac
+########################################################################################################################
 step-1: download https://docs.docker.com/desktop/mac/install/
 step-2: install setup
 # docker machine:
@@ -58,7 +61,7 @@ step-4: docker-machine --version
 step-5: docker-machine create --driver=virtualbox test
 ########################################################################################################################
 # command
-
+########################################################################################################################
 # info
 docker --version
 docker -v
@@ -99,10 +102,3 @@ step-3: docker commit -c 'CMD [""]' image-id
 # docker compose
 docker-compose up [--build] [-d]
 ########################################################################################################################
-
-
-
-
-
-
-

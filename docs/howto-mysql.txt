@@ -1,27 +1,28 @@
-install mysql
-add mysql bin directory to system path
+# install mysql
+# add mysql bin directory to system path
 
-========================================================================================================
-========================================================================================================
-========================================================================================================
+########################################################################################################################
+# command
+########################################################################################################################
+# import database
+        - mysql -u root -p < file.sql
+# import data
+        - mysql -u root -p db-name < file.sql
 
-import database: mysql -u root -p < file.sql
-import data: mysql -u root -p db-name < file.sql
-backup database: mysqldump mysql -u root -p [–no-data] db-name [–no-create-info] > file.sql
-backup database: mysqldump mysql -u root -p [–no-data] -databases db-name1 db-name2 ... [–no-create-info] > file.sql
-backup database: mysqldump mysql -u root -p [–no-data] all-databases [–no-create-info] > file.sql
-backup database: mysqldump mysql -u root -p [–no-data] db-name table-name1 table-name2 ... [–no-create-info] > file.sql
+# backup database
+mysqldump mysql -u root -p [–no-data] db-name [–no-create-info] > file.sql
+mysqldump mysql -u root -p [–no-data] -databases db-name1 db-name2 ... [–no-create-info] > file.sql
+mysqldump mysql -u root -p [–no-data] all-databases [–no-create-info] > file.sql
+mysqldump mysql -u root -p [–no-data] db-name table-name1 table-name2 ... [–no-create-info] > file.sql
 
+# general command
 create database db-name;
 drop database db-name;
 show databases;
 show tables;
 use database-name;
 
-========================================================================================================
-========================================================================================================
-========================================================================================================
-
+# example: create database and user to support JTA
 connect to mysql: mysql -u root -p
 SQL:
 show databases;
@@ -33,10 +34,4 @@ GRANT XA_RECOVER_ADMIN ON *.* TO 'pine'@'localhost';
 GRANT ALL ON `eshop`.* TO 'pine'@'localhost';
 FLUSH PRIVILEGES;
 exit;
-
-========================================================================================================
-========================================================================================================
-========================================================================================================
-
-
-
+########################################################################################################################

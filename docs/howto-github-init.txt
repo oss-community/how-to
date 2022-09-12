@@ -1,6 +1,6 @@
-step-1: git init
-step-2: git add .
-step-3: git commit -m "initial repository"
-step-4: git branch -M main
-step-5: git remote add origin https://github.com/UsernameOrOrganization/repository.git
-step-6: git push -u origin main
+git init
+git add .
+git commit -m "initial repository"
+git branch -M main
+git remote add origin https://github.com/UsernameOrOrganization/repository.git
+git push -u origin main

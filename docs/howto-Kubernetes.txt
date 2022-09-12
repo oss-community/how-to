@@ -1,15 +1,19 @@
 ########################################################################################################################
 # linux, ubuntu
+########################################################################################################################
 step-1: sudo apt install net-tools
+
 step-2: run following commands to get name of host and ip of machine
-    hostname
-    ifconfig
+        - hostname
+        - ifconfig
+
 step-3: edit host file
-    sudo gedit /etc/hosts
-    add => ip	hostname
+        - sudo gedit /etc/hosts
+        - add => ip	hostname
+
 step-4: run following commands to make sure there is no error
-    sudo cat /sys/class/dmi/id/product_uuid
-    lsmod | grep br_netfilter
+        - sudo cat /sys/class/dmi/id/product_uuid
+        - lsmod | grep br_netfilter
 
 step-5: edit kubernetes config file
 cat <<EOF | sudo tee /etc/modules-load.d/k8s.conf
@@ -20,52 +24,55 @@ cat <<EOF | sudo tee /etc/sysctl.d/k8s.conf
 net.bridge.bridge-nf-call-ip6tables = 1
 net.bridge.bridge-nf-call-iptables = 1
 EOF
+
 step-6: run following commands to load new configs
-    sudo sysctl --system
+        - sudo sysctl --system
+
 step-7: run following commands to make sure the port is open
-    nc 127.0.0.1 6443
+        - nc 127.0.0.1 6443
 
 step-8: set swap to zero
-    sudo swapoff -a
-    sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
+        - sudo swapoff -a
+        - sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
 
 step-9: edit system config
-    sudo gedit /etc/sysctl.conf
-    add => net.ipv4.ip_forward=1
-    sudo sysctl -p
+        - sudo gedit /etc/sysctl.conf
+        - add => net.ipv4.ip_forward=1
+        - sudo sysctl -p
 
 step-10: execute the following command
-    sudo apt-get update
-    sudo apt-get install -y apt-transport-https ca-certificates curl
-    sudo curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
-    echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
-    sudo apt-get update
-    sudo apt-get install -y kubelet kubeadm kubectl
-    sudo apt-mark hold kubelet kubeadm kubectl
+        - sudo apt-get update
+        - sudo apt-get install -y apt-transport-https ca-certificates curl
+        - sudo curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
+        - echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+        - sudo apt-get update
+        - sudo apt-get install -y kubelet kubeadm kubectl
+        - sudo apt-mark hold kubelet kubeadm kubectl
 step-11: check version in order to test installation
-    kubeadm version
-    kubectl version
-    kubelet --version
+        - kubeadm version
+        - kubectl version
+        - kubelet --version
 
 step-12: edit docker service file
-    sudo gedit /usr/lib/systemd/system/docker.service
-    add => ExecStart=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock --exec-opt native.cgroupdriver=systemd
+        - sudo gedit /usr/lib/systemd/system/docker.service
+        - add => ExecStart=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock --exec-opt native.cgroupdriver=systemd
 
 step-13: check restart the services and check status of services
-    sudo systemctl daemon-reload
-    sudo systemctl restart docker
-    sudo systemctl enable docker
-    sudo systemctl status docker
-    sudo systemctl status kubelet
+        - sudo systemctl daemon-reload
+        - sudo systemctl restart docker
+        - sudo systemctl enable docker
+        - sudo systemctl status docker
+        - sudo systemctl status kubelet
 
 step-14: reboot machine
-    sudo reboot
+        - sudo reboot
 
 # after creating cluster install network driver
-kubectl apply -f https://projectcalico.docs.tigera.io/manifests/calico.yaml
-kubectl apply -f https://docs.projectcalico.org/v3.14/manifests/calico.yaml
+        - kubectl apply -f https://projectcalico.docs.tigera.io/manifests/calico.yaml
+        - kubectl apply -f https://docs.projectcalico.org/v3.14/manifests/calico.yaml
 ########################################################################################################################
 # mac
+########################################################################################################################
 brew install hyperkit
 brew install minikube
 minikube start --vm-driver=hyperkit
@@ -76,6 +83,7 @@ eval $(minikube docker-env)
 minikube dashboard
 ########################################################################################################################
 # command
+########################################################################################################################
 # show resources: kubectl get resource-type
 kubectl get services
 kubectl get services --all-namespaces -o wide
