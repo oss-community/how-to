@@ -139,20 +139,21 @@ cf version
 setx /M PATH "%PATH%;bosh-path"
 bosh -v
 
-## getting start
+# getting start
+# create workspace directory and clone bosh-deployment in the workspace
 git clone https://github.com/cloudfoundry/bosh-deployment.git
-mkdir bosh-env\virtualbox
-cd bosh-env\virtualbox
+mkdir C:\workspace\bosh-env\virtualbox
+cd C:\workspace\bosh-env\virtualbox
 
-bosh create-env .\bosh-deployment\bosh.yml ^
+bosh create-env C:\workspace\bosh-deployment\bosh.yml ^
   --state .\state.json ^
-  -o .\bosh-deployment\virtualbox\cpi.yml ^
-  -o .\bosh-deployment\virtualbox\outbound-network.yml ^
-  -o .\bosh-deployment\bosh-lite.yml ^
-  -o .\bosh-deployment\bosh-lite-runc.yml ^
-  -o .\bosh-deployment\uaa.yml ^
-  -o .\bosh-deployment\credhub.yml ^
-  -o .\bosh-deployment\jumpbox-user.yml ^
+  -o C:\workspace\bosh-deployment\virtualbox\cpi.yml ^
+  -o C:\workspace\bosh-deployment\virtualbox\outbound-network.yml ^
+  -o C:\workspace\bosh-deployment\bosh-lite.yml ^
+  -o C:\workspace\bosh-deployment\bosh-lite-runc.yml ^
+  -o C:\workspace\bosh-deployment\uaa.yml ^
+  -o C:\workspace\bosh-deployment\credhub.yml ^
+  -o C:\workspace\bosh-deployment\jumpbox-user.yml ^
   --vars-store .\creds.yml ^
   -v director_name=bosh-lite ^
   -v internal_ip=192.168.56.6 ^

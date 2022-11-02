@@ -1,8 +1,12 @@
 # your machine
-step-1: git checkout --orphan site
-step-2: git clean -fdx
-step-3: echo "site" > index.html
-step-4: git add . && git commit -m "initial site content" && git push origin site
+git checkout --orphan site
+rm .git/index
+git clean -fdx
+echo "site" > index.html
+git add .
+git commit -m "initializing site"
+git push origin site
+git checkout main
 
 # GitHub
 step-1: go to GitHub repository > setting > pages
